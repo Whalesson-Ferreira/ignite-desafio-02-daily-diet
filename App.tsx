@@ -1,20 +1,37 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { ActivityIndicator } from 'react-native';
+import { ThemeProvider } from 'styled-components/native';
+import {
+	useFonts,
+	NunitoSans_400Regular,
+	NunitoSans_700Bold
+} from '@expo-google-fonts/nunito-sans';
+
+import { AppStatusBar } from '@components/AppStatusBar';
+
+import theme from './src/theme';
+
+import { Routes } from './src/routes';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+	const [fontsLoaded] = useFonts({
+		NunitoSans_400Regular,
+		NunitoSans_700Bold
+	});
+
+	const [screen, setScreen] = useState('Home');
+
+	const [statusBarColor, setStatusBarColor] = useState(theme.COLORS.GRAY_700);
+
+	return (
+		<ThemeProvider theme={theme}>
+			<AppStatusBar />
+			{
+				fontsLoaded
+					? <Routes />
+					: <ActivityIndicator />
+			}
+		</ThemeProvider>
+	);
+}
