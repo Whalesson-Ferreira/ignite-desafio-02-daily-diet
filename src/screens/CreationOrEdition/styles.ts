@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export const Container = styled(SafeAreaView)`
 	flex: 1;
-	background-color: ${({ theme }) => theme.COLORS.GRAY_700};
+	background-color: ${({ theme }) => theme.COLORS.GRAY_500};
 `;
 
 export const Form = styled.ScrollView`
@@ -22,3 +22,8 @@ export const SelectContainer = styled.View`
 	flex-direction: row;
 	margin-top: 6px;
 `;
+
+export const DateTimeContainer = styled.View`
+	flex-direction: row;
+	margin-bottom: 20px;
+`

@@ -11,7 +11,7 @@ export const Title = styled.Text`
 	${({ theme }) => css`
 		font-size: ${theme.FONT_SIZE.BODY.MD}px;
 		font-family: ${theme.FONT_FAMILY.REGULAR};
-		color: ${theme.COLORS.GRAY_100}
+		color: ${theme.COLORS.GRAY_100};
 	`};
 	margin-top: 24px;
 	margin-bottom: 6px;
@@ -25,4 +25,13 @@ export const ListDate = styled.Text`
 	`};
 	margin-top: 20px;
 	margin-bottom: 6px;
+`;
+
+export const NoMealsMessage = styled.Text`
+	text-align: center;
+	${({ theme }) => css`
+		font-family: ${theme.FONT_FAMILY.REGULAR};
+		font-size: ${theme.FONT_SIZE.BODY.SM}px;
+		color: ${theme.COLORS.GRAY_100};
+	`};
 `;

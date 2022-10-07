@@ -1,4 +1,5 @@
 import styled, { css } from 'styled-components/native';
+import { ActivityIndicatorProps } from 'react-native';
 
 export type DataType = 'DEFAULT' | 'INSIDE_THE_DIET' | 'OUT_OF_DIET';
 
@@ -36,6 +37,13 @@ export const Number = styled.Text`
 		color: ${theme.COLORS.GRAY_100};
 	`};
 `;
+
+export const LoadingStats = styled.ActivityIndicator.attrs(({ theme }) => ({
+	color: theme.COLORS.GRAY_100,
+	size: theme.FONT_SIZE.TITLE.MD
+} as ActivityIndicatorProps))`
+	padding: ${({ theme }) => (theme.FONT_SIZE.TITLE.MD / 4)}px;
+`
 
 export const Info = styled.Text`
 	${({ theme }) => css`

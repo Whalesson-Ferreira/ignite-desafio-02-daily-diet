@@ -1,5 +1,4 @@
-import { useState } from 'react';
-import { ActivityIndicator } from 'react-native';
+import { useState, useEffect } from 'react';
 import { ThemeProvider } from 'styled-components/native';
 import {
 	useFonts,
@@ -8,6 +7,8 @@ import {
 } from '@expo-google-fonts/nunito-sans';
 
 import { AppStatusBar } from '@components/AppStatusBar';
+import { Loading } from '@components/Loading';
+import * as NavigationBar from 'expo-navigation-bar';
 
 import theme from './src/theme';
 
@@ -20,17 +21,30 @@ export default function App() {
 		NunitoSans_700Bold
 	});
 
-	const [screen, setScreen] = useState('Home');
+	const [completeConfig, setCompleteConfig] = useState(false);
 
-	const [statusBarColor, setStatusBarColor] = useState(theme.COLORS.GRAY_700);
+	async function setNavigationBar() {
+		try {
+			await NavigationBar.setBackgroundColorAsync(theme.COLORS.GRAY_100);
+			await NavigationBar.setButtonStyleAsync('light');
+		} catch (error) {
+			console.log('Erro ao configurar NavigationBar --> ', error)
+		} finally {
+			setCompleteConfig(true);
+		}
+	}
+
+	useEffect(() => {
+		setNavigationBar();
+	}, [])
 
 	return (
 		<ThemeProvider theme={theme}>
 			<AppStatusBar />
 			{
-				fontsLoaded
+				fontsLoaded && completeConfig
 					? <Routes />
-					: <ActivityIndicator />
+					: <Loading color={theme.COLORS.GRAY_100} />
 			}
 		</ThemeProvider>
 	);

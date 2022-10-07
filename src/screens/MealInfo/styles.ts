@@ -6,9 +6,13 @@ type Props = {
 	isInsideTheDiet: boolean;
 }
 
-export const Container = styled(SafeAreaView)`
+export const Container = styled(SafeAreaView) <Props>`
 	flex: 1;
-	background-color: ${({ theme }) => theme.COLORS.GRAY_700};
+	background-color: ${({ theme, isInsideTheDiet }) =>
+		isInsideTheDiet
+			? theme.COLORS.GREEN_LIGHT
+			: theme.COLORS.RED_LIGHT
+	};
 `;
 
 export const InfoContainer = styled.View`

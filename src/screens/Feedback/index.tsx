@@ -1,7 +1,6 @@
 import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { Button } from '@components/Button';
-import { AppStatusBar } from '@components/AppStatusBar';
 
 import { Container, Title, Description, Illustration, Bold } from './styles';
 
@@ -23,7 +22,6 @@ export function Feedback() {
 
 	return (
 		<Container>
-			<AppStatusBar />
 			<Title isInsideTheDiet={isInsideTheDiet}>
 				{
 					isInsideTheDiet

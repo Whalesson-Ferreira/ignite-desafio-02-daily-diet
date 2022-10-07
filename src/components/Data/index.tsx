@@ -1,7 +1,7 @@
-import { Container, Number, Info, DataType } from './styles';
+import { Container, Number, Info, DataType, LoadingStats } from './styles';
 
 type Props = {
-	number: number;
+	number: number | null;
 	info: string;
 	type?: DataType;
 }
@@ -9,7 +9,13 @@ type Props = {
 export function Data({ number, info, type = 'DEFAULT' }: Props) {
 	return (
 		<Container type={type}>
-			<Number>{number}</Number>
+			{
+				number
+					?
+					<Number>{number}</Number>
+					:
+					<LoadingStats />
+			}
 			<Info>{info}</Info>
 		</Container>
 	);

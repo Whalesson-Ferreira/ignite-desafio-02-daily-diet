@@ -23,7 +23,10 @@ export const Container = styled.View<Props>`
 
 export const Button = styled(TouchableOpacity)``
 
-export const Icon = styled(ArrowLeft).attrs(({ }) => ({ size: 24 } as IconProps))``;
+export const Icon = styled(ArrowLeft).attrs(({ theme }) => ({
+	size: 24,
+	color: theme.COLORS.GRAY_200
+} as IconProps))``;
 
 export const Title = styled.Text`
 	${({ theme }) => css`

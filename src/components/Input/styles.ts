@@ -1,17 +1,17 @@
 import styled, { css } from 'styled-components/native';
 import { TextInputProps, TextInput } from 'react-native';
 
-export type InputOrder = 'SINGLE' | 'FIRST' | 'SECOND';
+export type InputAlignStyle = 'SINGLE' | 'LEFT' | 'RIGHT';
 
 type Props = {
-	sydeBySyde: InputOrder;
+	inputAlign: InputAlignStyle;
 }
 
 
 export const Container = styled.View<Props>`
-	${({ sydeBySyde }) => sydeBySyde === 'SINGLE'
+	${({ inputAlign }) => inputAlign === 'SINGLE'
 		? null
-		: sydeBySyde === 'FIRST'
+		: inputAlign === 'LEFT'
 			? css`flex: 1; margin-right: 20px;`
 			: css`flex: 1`
 	};
@@ -29,6 +29,8 @@ export const MyInput = styled(TextInput).attrs(({ theme }) => ({
 	selectionColor: theme.COLORS.GRAY_400
 } as TextInputProps))`
 	padding: 14px;
+	align-items: center;
+	height: 48px;
 	margin-top: 4px;
 	margin-bottom: 24px;
 	border-radius: 6px;

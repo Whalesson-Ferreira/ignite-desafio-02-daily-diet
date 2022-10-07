@@ -1,161 +1,141 @@
-import { useState } from 'react';
-import { Pressable, Text, FlatList, View } from 'react-native';
-import * as AllIcons from 'phosphor-react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useState, useEffect, useCallback } from 'react';
+import { FlatList, Alert } from 'react-native';
+import * as PhosphorIcons from 'phosphor-react-native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { useTheme } from 'styled-components/native';
+
+import { getAllMeals, MealStorageDTO } from '@storage/meal';
 
 import { TopCard } from '@components/TopCard';
 import { Percent } from '@components/Percent';
 import { Button } from '@components/Button';
 import { Meal } from '@components/Meal';
+import { Loading } from '@components/Loading';
 
-import { Container, Title, ListDate } from './styles';
-
-type dataT = {
-	hour: string;
-	name: string;
-	inDiet?: boolean;
-	date: number;
-}
-
-const data: dataT[] = [{
-	hour: '20.00',
-	name: 'X-tudo',
-	// inDiet: true,
-	date: 12
-}, {
-	hour: '16.00',
-	name: 'Whey protein com leite',
-	inDiet: true,
-	date: 12
-}, {
-	hour: '12.30',
-	name: 'Salada cesar com frango grelhado',
-	inDiet: true,
-	date: 12
-}, {
-	hour: '9.30',
-	name: 'Vitamina de banana com abacate',
-	inDiet: true,
-	date: 12
-}, {
-	hour: '20.00',
-	name: 'X-tudo 2',
-	// inDiet: true,
-	date: 11
-}, {
-	hour: '16.00',
-	name: 'Whey protein com leite 2',
-	inDiet: true,
-	date: 11
-}, {
-	hour: '12.30',
-	name: 'Salada cesar com frango grelhado 2',
-	inDiet: true,
-	date: 11
-}, {
-	hour: '9.30',
-	name: 'Vitamina de banana com abacate 2',
-	inDiet: true,
-	date: 11
-}, {
-	hour: '20.00',
-	name: 'X-tudo 3',
-	// inDiet: true,
-	date: 10
-}, {
-	hour: '16.00',
-	name: 'Whey protein com leite 3',
-	inDiet: true,
-	date: 10
-}, {
-	hour: '12.30',
-	name: 'Salada cesar com frango grelhado 3',
-	inDiet: true,
-	date: 10
-}, {
-	hour: '9.30',
-	name: 'Vitamina de banana com abacate 3',
-	inDiet: true,
-	date: 10
-}]
-
-const data2: dataT[] = [];
+import { Container, Title, ListDate, NoMealsMessage } from './styles';
 
 export function Home() {
+	const [meals, setMeals] = useState<MealStorageDTO[]>([]);
+	const [percentage, setPercentage] = useState<number | null>(null);
+	const [loadingMeals, setLoadingMeals] = useState(false);
 
 	const navigation = useNavigation();
+	const { COLORS } = useTheme();
 
 	function handleNewMeal() {
 		navigation.navigate('creationOrEdition', { screenAction: 'CREATION' });
 	}
 
 	function handleMealStatistcs() {
-		navigation.navigate('statistics', { percentage: 50 });
+		navigation.navigate('statistics', {
+			percentage: percentage !== null ? percentage : 0
+		});
 	}
 
-	function handleMealInfo(info: { name: string; isInsideTheDiet: boolean; }) {
-		navigation.navigate('meal', info);
+	function handleMealInfo(dateTime: string) {
+		navigation.navigate('meal', {
+			dateTime
+		});
 	}
+
+	function updatePercentage() {
+		const amountInsideTheDiet = meals.filter(meal => meal.insideTheDiet === true).length;
+
+		const percentage = (meals.length > 0)
+			? (amountInsideTheDiet * 100) / (meals.length)
+			: null;
+
+		setPercentage(percentage);
+	}
+
+	async function fetchMeals() {
+		try {
+			setLoadingMeals(true);
+			const allMeals = await getAllMeals();
+			setMeals(allMeals);
+		} catch (error) {
+			console.log(error);
+			return Alert.alert(
+				'Erro',
+				'Ocorreu um erro ao carregar as refeições. Por favor, feche a aplicação e tente novamente.'
+			)
+		} finally {
+			setLoadingMeals(false);
+		}
+	}
+
+	useFocusEffect(useCallback(() => {
+		fetchMeals();
+	}, []));
+
+	useEffect(() => {
+		updatePercentage();
+	}, [meals])
 
 	return (
 		<Container>
 			<TopCard />
 			<Percent
-				percentage={90.86}
+				percentage={percentage}
 				onPress={handleMealStatistcs}
 			/>
 			<Title>Refeições</Title>
 
 			<Button
-				// type='SECONDARY'
 				title='Nova refeição'
-				MyIcon={AllIcons.Plus}
+				MyIcon={PhosphorIcons.Plus}
 				onPress={handleNewMeal}
+				style={{ marginBottom: 8 }}
 			/>
+			{
+				loadingMeals
+					?
+					<Loading
+						color={COLORS.GRAY_100}
+						size='small'
+					/>
+					:
+					<FlatList
+						data={meals}
+						keyExtractor={item => item.date + '-' + item.time}
+						renderItem={({ item }) => {
+							const x = meals.indexOf(item);
 
-			{/* <ListDate>{data[0].date}.08.22</ListDate> */}
-			<FlatList
-				data={data}
-				keyExtractor={item => item.name}
-				renderItem={({ item }) => {
-					const x = data.indexOf(item);
+							const [currentDay, currentMonth, currentYear] = item.date.split('/');
+							const [previousDay, previousMonth, previousYear] = x !== 0
+								? meals[x - 1].date.split('/')
+								: '';
 
-					if (x === 0 || data[x].date !== data[x - 1].date) {
-						return (
-							<>
-								<ListDate>{item.date}.08.22</ListDate>
-								<Meal
-									hour={item.hour}
-									name={item.name}
-									inDiet={item.inDiet}
-									onPress={() => handleMealInfo({
-										name: item.name,
-										isInsideTheDiet: item.inDiet ? item.inDiet : false
-									})}
-								/>
-							</>
-						);
-					}
-					return (
-						<Meal
-							hour={item.hour}
-							name={item.name}
-							inDiet={item.inDiet}
-							onPress={() => handleMealInfo({
-								name: item.name,
-								isInsideTheDiet: item.inDiet ? item.inDiet : false
-							})}
-						/>
-					);
-				}}
-				showsVerticalScrollIndicator={false}
+							return (
+								<>
+									{
+										(currentDay !== previousDay
+											|| currentMonth !== previousMonth
+											|| currentYear !== previousYear)
+										&&
+										<ListDate>{currentDay}.{currentMonth}.{currentYear}</ListDate>
+									}
+									<Meal
+										hour={item.time}
+										name={item.name}
+										inDiet={item.insideTheDiet}
+										onPress={() => handleMealInfo(`${item.date}-${item.time}`)}
+									/>
+								</>
+							);
+						}}
+						showsVerticalScrollIndicator={false}
 
-				contentContainerStyle={data.length === 0 ? { flex: 1, alignItems: 'center', justifyContent: 'center' } : {}}
-				ListEmptyComponent={() => (
-					<Text>Nada</Text>
-				)}
-			/>
-
+						contentContainerStyle={
+							meals.length === 0
+								? { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 15 }
+								: { paddingBottom: 100 }
+						}
+						ListEmptyComponent={() => (
+							<NoMealsMessage>Ainda não há refeições cadastradas, adicione sua primeira refeição acima.</NoMealsMessage>
+						)}
+					/>
+			}
 		</Container>
 	);
 }

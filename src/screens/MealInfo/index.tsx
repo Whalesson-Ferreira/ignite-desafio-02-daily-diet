@@ -1,13 +1,12 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import * as PhosphorIcon from 'phosphor-react-native';
-import { useRoute, useNavigation } from '@react-navigation/native';
-import { useTheme } from 'styled-components/native';
+import { useRoute, useNavigation, useFocusEffect } from '@react-navigation/native';
+
 
 import { Button } from '@components/Button';
 import { Content } from '@components/Content';
 import { Header } from '@components/Header';
 import { ExclusionModal } from '@components/ExclusionModal';
-import { AppStatusBar } from '@components/AppStatusBar';
 
 import {
 	Container,
@@ -21,29 +20,18 @@ import {
 	StatusInfo
 } from './styles';
 
-const data = {
-	name: 'Sanduíche',
-	description: 'Sanduíche de pão integral com atum e salada de alface e tomate',
-	dateAndTime: '12/08/2022 às 16:00',
-	isInsideTheDiet: true
-};
-
-const data2 = {
-	name: 'X-tudo',
-	description: 'Xis completo da lancheria do bairro',
-	dateAndTime: '12/08/2022 às 20:00',
-	isInsideTheDiet: false
-};
+type MealRouteParams = {
+	dateTime: string;
+}
 
 export function MealInfo() {
 
 	const [isModalVisible, setIsModalVisible] = useState(false)
 
-	const { description, dateAndTime } = data2;
 
-	const { COLORS } = useTheme();
 	const route = useRoute();
-	const { name, isInsideTheDiet } = route.params as { name: string; isInsideTheDiet: boolean; };
+	// const { dateTime } = route.params as MealRouteParams;
+
 	const navigation = useNavigation();
 
 	function handleGoBackHome() {
@@ -54,8 +42,8 @@ export function MealInfo() {
 		navigation.navigate('creationOrEdition', {
 			screenAction: 'EDITION',
 			data: {
-				name,
-				isInsideTheDiet
+				name: 'Nome padrão',
+				isInsideTheDiet: true
 			}
 		});
 	}
@@ -64,40 +52,45 @@ export function MealInfo() {
 		setIsModalVisible(true);
 	}
 
+
+
+	useEffect(() => {
+		const { dateTime } = route.params as MealRouteParams;
+		console.log(dateTime)
+	}, [])
+
 	return (
-		<Container>
-			<AppStatusBar
-				type={
-					isInsideTheDiet
-						? 'PRIMARY'
-						: 'SECONDARY'
-				}
-			/>
+		<Container isInsideTheDiet={true}>
+			{/* <Container isInsideTheDiet={isInsideTheDiet}> */}
 			<ExclusionModal
 				animationType='slide'
 				transparent
 				visible={isModalVisible}
 				onRequestClose={() => setIsModalVisible(false)}
 				onClose={() => setIsModalVisible(false)}
+				statusBarTranslucent
 			/>
 			<Header
 				title='Refeição'
-				type={
-					isInsideTheDiet
-						? 'PRIMARY'
-						: 'SECONDARY'
-				}
+				type={'PRIMARY'}
+				// type={
+				// 	isInsideTheDiet
+				// 		? 'PRIMARY'
+				// 		: 'SECONDARY'
+				// }
 				onPress={handleGoBackHome}
 			/>
 			<Content>
 				<InfoContainer>
-					<Name>{name}</Name>
-					<Description>{description}</Description>
+					<Name>Nome padrão</Name>
+					<Description>Descrição padrão</Description>
 					<Title>Data e hora</Title>
-					<DateAndTime>{dateAndTime}</DateAndTime>
+					<DateAndTime>Data e hora padrão</DateAndTime>
 					<Status>
-						<Icon isInsideTheDiet={isInsideTheDiet} />
-						<StatusInfo>{isInsideTheDiet ? 'dentro ' : 'fora '}da dieta</StatusInfo>
+						<Icon isInsideTheDiet={true} />
+						{/* <Icon isInsideTheDiet={isInsideTheDiet} /> */}
+						<StatusInfo>Status padrão</StatusInfo>
+						{/* <StatusInfo>{isInsideTheDiet ? 'dentro ' : 'fora '}da dieta</StatusInfo> */}
 					</Status>
 				</InfoContainer>
 				<Button

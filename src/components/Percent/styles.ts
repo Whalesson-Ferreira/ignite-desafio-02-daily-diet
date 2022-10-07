@@ -3,7 +3,7 @@ import { ArrowUpRight, IconProps, ArrowLeft } from 'phosphor-react-native';
 import { TouchableOpacity } from 'react-native';
 
 type ContainerProps = {
-	percentage: number;
+	percentage: number | null;
 	asHeader?: boolean;
 }
 
@@ -28,16 +28,15 @@ export const Container = styled.View<ContainerProps>`
 			justify-content: center;
 	`};	
 	background-color: ${({ theme, percentage }) =>
-		percentage > 50
-			? theme.COLORS.GREEN_LIGHT
-			: percentage < 50
-				? theme.COLORS.RED_LIGHT
-				: theme.COLORS.GRAY_500
+		percentage === null
+			? theme.COLORS.GRAY_500
+			: percentage > 50
+				? theme.COLORS.GREEN_LIGHT
+				: theme.COLORS.RED_LIGHT
 	};
 `;
 
 export const Button = styled(TouchableOpacity) <ButtonProps>`
-	/* align-self: flex-start; */
 	align-self: ${({ asHeader }) => asHeader ? 'flex-start' : 'flex-end'};
 	top: -8px;
 	right: -4px;
@@ -46,12 +45,16 @@ export const Button = styled(TouchableOpacity) <ButtonProps>`
 
 export const OpenIcon = styled(ArrowUpRight).attrs<MyIconProps>(({ theme, percentage }) => ({
 	size: 24,
-	color: percentage > 50 ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK
+	color: percentage > 50
+		? theme.COLORS.GREEN_DARK
+		: theme.COLORS.RED_DARK
 } as IconProps)) <MyIconProps>``;
 
 export const ReturnIcon = styled(ArrowLeft).attrs<MyIconProps>(({ theme, percentage }) => ({
 	size: 24,
-	color: percentage > 50 ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK
+	color: percentage > 50
+		? theme.COLORS.GREEN_DARK
+		: theme.COLORS.RED_DARK
 } as IconProps)) <MyIconProps>``;
 
 export const Percentage = styled.Text`
@@ -60,6 +63,7 @@ export const Percentage = styled.Text`
 		font-size: ${({ theme }) => theme.FONT_SIZE.TITLE.LG}px;
 		color: ${theme.COLORS.GRAY_100};
 	`};
+	text-align: center;
 `;
 
 export const Description = styled.Text`
@@ -68,4 +72,5 @@ export const Description = styled.Text`
 		font-size: ${theme.FONT_SIZE.BODY.SM}px;
 		color: ${theme.COLORS.GRAY_200};
 	`};
+	text-align: center;
 `;

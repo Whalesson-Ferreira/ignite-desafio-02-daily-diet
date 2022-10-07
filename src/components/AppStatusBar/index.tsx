@@ -12,15 +12,7 @@ export function AppStatusBar({ type = 'DEFAULT' }: Props) {
 	return (
 		<StatusBar
 			barStyle={'dark-content'}
-			backgroundColor={
-				type === 'PRIMARY'
-					? COLORS.GREEN_LIGHT
-					: type === 'SECONDARY'
-						? COLORS.RED_LIGHT
-						: type === 'GRAY'
-							? COLORS.GRAY_500
-							: COLORS.GRAY_700
-			}
+			backgroundColor='transparent'
 			translucent
 		/>
 	);
