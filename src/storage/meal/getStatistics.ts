@@ -1,4 +1,4 @@
-import { getAllMeals } from '../meal/getAllMeals';
+import { getMeals } from './getMeals';
 
 type Statistics = {
 	bestSequence: number;
@@ -6,16 +6,16 @@ type Statistics = {
 	mealsOffTheDiet: number;
 }
 
-export async function getStatisticsAboutMeals() {
+export async function getStatistics() {
 	try {
-		const allMeals = await getAllMeals();
+		const allMeals = await getMeals();
 
-		const mealsInsideTheDiet = allMeals.filter((meal) => meal.insideTheDiet === true).length;
+		const mealsInsideTheDiet = allMeals.filter((meal) => meal.isInsideTheDiet === true).length;
 
 		let best = 0;
 		let count = 0;
 		allMeals.map((value) => {
-			if (value.insideTheDiet === true) {
+			if (value.isInsideTheDiet === true) {
 				count++;
 				if (count > best) {
 					best = count;

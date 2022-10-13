@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { MEAL_COLLECTION } from '../storageConfig';
-import { MealStorageDTO } from './MealStorageDTO';
-import { getAllMealsByDate } from './getAllMealsByDate';
+import { MealStorageDTO } from './types/MealStorageDTO';
+import { getMealsByDate } from './getMealsByDate';
 import { AppError } from '@utils/AppError';
 
 function orderMeals(a: MealStorageDTO, b: MealStorageDTO) {
@@ -22,11 +22,10 @@ function orderMeals(a: MealStorageDTO, b: MealStorageDTO) {
 
 export async function createMeal(newMeal: MealStorageDTO) {
 	try {
-		// await AsyncStorage.removeItem(`${MEAL_COLLECTION}-${newMeal.date}`);
 		const { date } = newMeal;
-		const dayMeals = await getAllMealsByDate(date);
+		const dailyMeals = await getMealsByDate(date);
 
-		const timeAlreadyRegistered = dayMeals.find(
+		const timeAlreadyRegistered = dailyMeals.find(
 			meal => meal.time === newMeal.time
 		);
 
@@ -34,9 +33,9 @@ export async function createMeal(newMeal: MealStorageDTO) {
 			throw new AppError('Você já cadastrou uma refeição neste período.');
 		}
 
-		const dateMeals = [...dayMeals, newMeal];
-		dateMeals.sort(orderMeals);
-		await AsyncStorage.setItem(`${MEAL_COLLECTION}-${date}`, JSON.stringify(dateMeals));
+		const newDailyMeals = [...dailyMeals, newMeal];
+		newDailyMeals.sort(orderMeals);
+		await AsyncStorage.setItem(`${MEAL_COLLECTION}-${date}`, JSON.stringify(newDailyMeals));
 	} catch (error) {
 		throw error;
 	}

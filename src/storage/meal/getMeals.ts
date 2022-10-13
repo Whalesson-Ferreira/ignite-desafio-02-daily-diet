@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { MEAL_COLLECTION } from '../storageConfig';
-import { MealStorageDTO } from './MealStorageDTO';
+import { MealStorageDTO } from './types/MealStorageDTO';
 
-export async function getAllMeals() {
+export async function getMeals() {
 	try {
 		const knownKeys = await AsyncStorage.getAllKeys();
+
 		const keys = knownKeys.slice(0, knownKeys.length);
 		keys.reverse();
 

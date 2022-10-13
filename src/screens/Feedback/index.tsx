@@ -2,7 +2,13 @@ import { useRoute, useNavigation } from '@react-navigation/native';
 
 import { Button } from '@components/Button';
 
-import { Container, Title, Description, Illustration, Bold } from './styles';
+import {
+	Container,
+	Title,
+	Description,
+	Illustration,
+	Bold
+} from './styles';
 
 import sucessImg from '@assets/sucess.png';
 import alertImg from '@assets/alert.png';

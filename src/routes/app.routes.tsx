@@ -6,7 +6,24 @@ import { CreationOrEdition } from '@screens/CreationOrEdition';
 import { Feedback } from '@screens/Feedback';
 import { MealInfo } from '@screens/MealInfo';
 
-const { Navigator, Screen } = createNativeStackNavigator();
+export type RootStackParamList = {
+	home: undefined;
+	statistics: {
+		percentage: number;
+	};
+	creationOrEdition: {
+		screenAction: 'CREATION' | 'EDITION';
+		dateTime?: string;
+	};
+	feedback: {
+		isInsideTheDiet: boolean;
+	};
+	meal: {
+		dateTime: string;
+	};
+}
+
+const { Navigator, Screen } = createNativeStackNavigator<RootStackParamList>();
 
 export function AppRoutes() {
 	return (

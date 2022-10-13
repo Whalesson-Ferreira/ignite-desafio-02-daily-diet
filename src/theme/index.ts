@@ -33,7 +33,6 @@ export default {
 			SM: 18,
 			MD: 24,
 			LG: 32
-		}
-
+		},
 	}
 }

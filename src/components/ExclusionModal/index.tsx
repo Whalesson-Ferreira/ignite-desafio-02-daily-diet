@@ -1,5 +1,4 @@
-import { Modal, ModalProps, View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { Modal, ModalProps } from 'react-native';
 
 import { Container, Content, Question, Actions } from './styles';
 
@@ -7,19 +6,10 @@ import { Button } from '@components/Button';
 
 type Props = ModalProps & {
 	onClose: () => void;
+	onDelete: () => void;
 }
 
-export function ExclusionModal({ onClose, ...rest }: Props) {
-
-	const navigation = useNavigation();
-
-	function handleCancelExclusion() {
-		onClose();
-	}
-
-	function handleConfirmExclusion() {
-		navigation.navigate('home');
-	}
+export function ExclusionModal({ onClose, onDelete, ...rest }: Props) {
 
 	return (
 		<Modal {...rest}>
@@ -32,12 +22,12 @@ export function ExclusionModal({ onClose, ...rest }: Props) {
 							title='Cancelar'
 							type='SECONDARY'
 							style={{ flex: 1, marginRight: 10 }}
-							onPress={handleCancelExclusion}
+							onPress={onClose}
 						/>
 						<Button
 							title='Sim, excluir'
 							style={{ flex: 1 }}
-							onPress={handleConfirmExclusion}
+							onPress={onDelete}
 						/>
 					</Actions>
 				</Content>

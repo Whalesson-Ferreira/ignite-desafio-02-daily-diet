@@ -6,10 +6,6 @@ export const Container = styled(SafeAreaView)`
 	background-color: ${({ theme }) => theme.COLORS.GRAY_500};
 `;
 
-export const Form = styled.ScrollView`
-	flex: 1;
-`
-
 export const SelectTitle = styled.Text`
 	${({ theme }) => css`
 		font-family: ${theme.FONT_FAMILY.BOLD};
@@ -21,9 +17,9 @@ export const SelectTitle = styled.Text`
 export const SelectContainer = styled.View`
 	flex-direction: row;
 	margin-top: 6px;
+	margin-bottom: 6px;
 `;
 
 export const DateTimeContainer = styled.View`
 	flex-direction: row;
-	margin-bottom: 20px;
 `

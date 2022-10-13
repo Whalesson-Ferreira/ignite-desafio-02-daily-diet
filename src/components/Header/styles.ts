@@ -9,7 +9,6 @@ type Props = {
 }
 
 export const Container = styled.View<Props>`
-	height: 88px;
 	flex-direction: row;
 	background-color: ${({ theme, type }) => type === 'PRIMARY'
 		? theme.COLORS.GREEN_LIGHT
@@ -17,14 +16,15 @@ export const Container = styled.View<Props>`
 			? theme.COLORS.RED_LIGHT
 			: theme.COLORS.GRAY_500
 	};
-	padding: 13px 24px;
+	align-items: flex-start;
+	padding: 18px 24px;
 	justify-content: space-between;
 `;
 
 export const Button = styled(TouchableOpacity)``
 
 export const Icon = styled(ArrowLeft).attrs(({ theme }) => ({
-	size: 24,
+	size: theme.FONT_SIZE.TITLE.SM + theme.FONT_SIZE.TITLE.SM / 3,
 	color: theme.COLORS.GRAY_200
 } as IconProps))``;
 
@@ -34,4 +34,5 @@ export const Title = styled.Text`
 		font-size: ${theme.FONT_SIZE.TITLE.SM}px;
 		color: ${theme.COLORS.GRAY_100};
 	`};
+	text-align: center;
 `;

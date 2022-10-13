@@ -1,9 +1,11 @@
 import styled, { css } from 'styled-components/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { LinearGradient, LinearGradientProps } from 'expo-linear-gradient';
 
 export const Container = styled(SafeAreaView)`
 	flex: 1;
 	padding: 24px;
+	padding-bottom: 0px;
 	background-color: ${({ theme }) => theme.COLORS.GRAY_700};
 `;
 
@@ -34,4 +36,11 @@ export const NoMealsMessage = styled.Text`
 		font-size: ${theme.FONT_SIZE.BODY.SM}px;
 		color: ${theme.COLORS.GRAY_100};
 	`};
+`;
+
+export const Gradient = styled(LinearGradient).attrs(({ theme }) => ({
+	colors: [theme.COLORS.GRAY_100, 'rgba(250, 250, 250, 0)'],
+	locations: [0.6, 1]
+} as LinearGradientProps))`
+	flex: 1;
 `;

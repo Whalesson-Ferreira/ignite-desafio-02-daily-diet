@@ -17,15 +17,15 @@ type MyIconProps = {
 
 export const Container = styled.View<ContainerProps>`
 	align-items: center;
+	justify-content: center;
 	${({ asHeader }) => asHeader
 		? css`
 			padding: 28px 16px;
-			height: 156px;
 		`
 		: css`
 			padding: 20px 16px;
 			border-radius: 8px;
-			justify-content: center;
+			
 	`};	
 	background-color: ${({ theme, percentage }) =>
 		percentage === null
@@ -44,14 +44,14 @@ export const Button = styled(TouchableOpacity) <ButtonProps>`
 `;
 
 export const OpenIcon = styled(ArrowUpRight).attrs<MyIconProps>(({ theme, percentage }) => ({
-	size: 24,
+	size: theme.FONT_SIZE.TITLE.SM + theme.FONT_SIZE.TITLE.SM / 3,
 	color: percentage > 50
 		? theme.COLORS.GREEN_DARK
 		: theme.COLORS.RED_DARK
 } as IconProps)) <MyIconProps>``;
 
 export const ReturnIcon = styled(ArrowLeft).attrs<MyIconProps>(({ theme, percentage }) => ({
-	size: 24,
+	size: theme.FONT_SIZE.TITLE.SM + theme.FONT_SIZE.TITLE.SM / 3,
 	color: percentage > 50
 		? theme.COLORS.GREEN_DARK
 		: theme.COLORS.RED_DARK

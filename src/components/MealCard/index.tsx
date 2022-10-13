@@ -4,10 +4,10 @@ import { Container, Hour, MealName, Divider, Status } from './styles';
 type Props = PressableProps & {
 	hour: string;
 	name: string;
-	inDiet?: boolean;
+	isInsideTheDiet: boolean;
 }
 
-export function Meal({ hour, name, inDiet = false, ...rest }: Props) {
+export function MealCard({ hour, name, isInsideTheDiet, ...rest }: Props) {
 	return (
 		<Pressable {...rest}>
 			{({ pressed }) => (
@@ -15,7 +15,7 @@ export function Meal({ hour, name, inDiet = false, ...rest }: Props) {
 					<Hour>{hour}</Hour>
 					<Divider />
 					<MealName numberOfLines={1}>{name}</MealName>
-					<Status inDiet={inDiet} />
+					<Status isInsideTheDiet={isInsideTheDiet} />
 				</Container>
 			)}
 		</Pressable>

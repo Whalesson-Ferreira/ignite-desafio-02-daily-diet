@@ -1,47 +1,55 @@
 import { useState, useEffect } from 'react';
-import { Alert } from 'react-native';
+import { Alert, ScrollView } from 'react-native';
 import { useNavigation, useRoute, } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useTheme } from 'styled-components/native';
 
-import { createMeal, MealStorageDTO } from '@storage/meal';
+import { RootStackParamList } from '@routes/app.routes';
+
+import {
+	createMeal,
+	MealStorageDTO,
+	getMeal,
+	updateMeal
+} from '@storage/meal';
 
 import { Header } from '@components/Header';
 import { Content } from '@components/Content';
 import { Input } from '@components/Input';
 import { Select } from '@components/Select';
 import { Button } from '@components/Button';
+import { Loading } from '@components/Loading';
+
+import { AppError } from '@utils/AppError';
 
 import {
 	Container,
-	Form,
 	SelectTitle,
 	SelectContainer,
 	DateTimeContainer
 } from './styles';
-import { AppError } from '@utils/AppError';
 
 type Params = {
 	screenAction: 'CREATION' | 'EDITION';
-	data?: {
-		name: string;
-		isInsideTheDiet: boolean;
-	}
+	dateTime?: string;
 }
 
-export function CreationOrEdition() {
+type ScreenProp = NativeStackNavigationProp<RootStackParamList, 'creationOrEdition'>;
 
+export function CreationOrEdition() {
 	const [name, setName] = useState('');
 	const [description, setDescription] = useState('');
 	const [date, setDate] = useState('');
 	const [time, setTime] = useState('');
-
 	const [selectedOption, setSelectedOption] = useState<boolean | null>(null);
-
+	const [loadingInfo, setLoadingInfo] = useState(true);
 
 	const route = useRoute();
-	const { screenAction, data } = route.params as Params;
-	const navigation = useNavigation();
+	const { screenAction, dateTime } = route.params as Params;
+	const navigation = useNavigation<ScreenProp>();
+	const { COLORS } = useTheme();
 
-	function handleGoBackHome() {
+	function handleGoBackToPreviousScreen() {
 		navigation.goBack();
 	}
 
@@ -51,11 +59,9 @@ export function CreationOrEdition() {
 		) {
 			return (Alert.alert(
 				'Atenção!',
-				'Por favor, informe todos os dados para prosseguir com o cadastro.'
+				'Por favor, informe todos os dados para prosseguir.'
 			));
-			// return false;
 		}
-
 
 		const dateVerification = verifyDate(date);
 
@@ -82,7 +88,6 @@ export function CreationOrEdition() {
 	async function handleNewMeal() {
 		const verificationStatus = verifyData();
 		if (verificationStatus) {
-			//salvar no storage
 			try {
 				const newMeal: MealStorageDTO = {
 					name: name,
@@ -91,13 +96,12 @@ export function CreationOrEdition() {
 					time: time.length === 5
 						? time
 						: '' + time.padStart(2, '0') + ':00',
-					insideTheDiet: selectedOption === null ? true : selectedOption
-				}
-				console.log('Refeição: ', newMeal)
+					isInsideTheDiet: selectedOption === null ? true : selectedOption
+				};
 				await createMeal(newMeal);
 
 				if (selectedOption !== null)
-					navigation.navigate('feedback', {
+					navigation.replace('feedback', {
 						isInsideTheDiet: selectedOption
 					});
 			} catch (error) {
@@ -113,22 +117,39 @@ export function CreationOrEdition() {
 					'Ocorreu um erro ao cadastrar a refeição.'
 				);
 			}
-
-			// console.log('prosseguir =>', {
-			// 	name: name,
-			// 	description: description,
-			// 	date: date,
-			// 	time: time.length === 5
-			// 		? time
-			// 		: '' + time.padStart(2, '0') + ':00',
-			// 	inDiet: selectedOption
-			// });
-
 		}
 	}
 
-	function handleSaveMeal() {
-		navigation.navigate('home');
+	async function handleSaveMeal() {
+		const verificationStatus = verifyData();
+		if (verificationStatus) {
+			try {
+				const updatedMeal: MealStorageDTO = {
+					name,
+					description,
+					date,
+					time: time.length === 5
+						? time
+						: '' + time.padStart(2, '0') + ':00',
+					isInsideTheDiet: selectedOption === null ? true : selectedOption
+				}
+
+				await updateMeal(dateTime ? dateTime : '', updatedMeal);
+				navigation.navigate('home');
+			} catch (error) {
+				console.log(error);
+				if (error instanceof AppError) {
+					return Alert.alert(
+						'Atenção!',
+						error.message
+					);
+				}
+				return Alert.alert(
+					'Atenção!',
+					'Ocorreu um erro ao salvar as alterações.'
+				);
+			}
+		}
 	}
 
 	function verifyDate(text: string) { // 04/10/2022		
@@ -177,7 +198,6 @@ export function CreationOrEdition() {
 		}
 
 		return true;
-		// return 'Data válida:' + [day, month, year];
 	}
 
 	function verifyTime(text: string) {
@@ -210,19 +230,53 @@ export function CreationOrEdition() {
 		const hours = parseInt(text);
 		if (hours > 23)
 			return 'Por favor, informe uma hora válida de 0 a 23.';
-		// else {
-		// 	const newTime = text.padStart(2, '0');
-		// 	text = newTime + ':00';
-		// 	setTime(newTime + ':00');
-		// }
-
 		return true;
 	}
 
+	async function fetchMeal() {
+		try {
+			if (dateTime) {
+				const specificMeal = await getMeal(dateTime);
+				// console.log('refeição =>', specificMeal);
+				const { name, description, date, time, isInsideTheDiet } = specificMeal;
+				setName(name);
+				setDescription(description);
+				setDate(date);
+				setTime(time);
+				setSelectedOption(isInsideTheDiet);
+				setLoadingInfo(false);
+			}
+
+		} catch (error) {
+			console.log(error);
+			if (error instanceof AppError) {
+				return Alert.alert(
+					'Erro',
+					error.message,
+					[
+						{
+							text: 'Ok',
+							onPress: () => navigation.goBack()
+						}
+					]
+				);
+			}
+			return Alert.alert(
+				'Erro',
+				'Ocorreu um erro ao buscar as informações sobre a refeição, volte e tente novamente.',
+				[
+					{
+						text: 'Ok',
+						onPress: () => navigation.goBack()
+					}
+				]
+			);
+		}
+	}
+
 	useEffect(() => {
-		if (data) {
-			console.log(data)
-			setSelectedOption(data.isInsideTheDiet);
+		if (screenAction === 'EDITION') {
+			fetchMeal();
 		}
 	}, []);
 
@@ -230,158 +284,193 @@ export function CreationOrEdition() {
 		<Container>
 			<Header
 				title={screenAction === 'CREATION' ? 'Nova refeição' : 'Editar refeição'}
-				onPress={handleGoBackHome}
+				onPress={handleGoBackToPreviousScreen}
 			/>
 			<Content>
-				<Form showsVerticalScrollIndicator={false} keyboardShouldPersistTaps='handled'>
-					<Input
-						title='Nome'
-						value={data ? data.name : name}
-						onChangeText={setName}
-					/>
-					<Input
-						title='Descrição'
-						value={description}
-						onChangeText={setDescription}
-						multiline
-						numberOfLines={4}
-						style={{ height: 120 }}
-						textAlignVertical={'top'}
-					/>
+				{
+					loadingInfo
+						&& screenAction === 'EDITION'
+						?
+						<Loading color={COLORS.GRAY_100} />
+						:
+						<>
+							<ScrollView
+								showsVerticalScrollIndicator={false}
+								keyboardShouldPersistTaps='handled'
+							>
+								<Input
+									title='Nome'
+									value={name}
+									onChangeText={setName}
+									isFilled={name.trim().length > 0}
+								/>
+								<Input
+									title='Descrição'
+									value={description}
+									onChangeText={setDescription}
+									multiline
+									numberOfLines={4}
+									style={{ height: 120 }}
+									textAlignVertical={'top'}
+									isFilled={description.trim().length > 0}
+								/>
 
-					<DateTimeContainer>
-						<Input
-							title='Data'
-							style={{ flex: 1 }}
-							inputAlign={'LEFT'}
-							value={date}
-							onChangeText={(text) => {
-								// console.log('texto inserido:', text);
-								// console.log('estado:', date);
+								<DateTimeContainer>
+									<Input
+										title='Data'
+										style={{ flex: 1 }}
+										inputAlign={'LEFT'}
+										value={date}
+										onChangeText={(text) => {
+											if (text.length > date.length) {
 
-								if (text.length > date.length) {
-									for (let x = 0; x < text.length; x++) {
-										if (text[x] !== '0' && text[x] !== '1' && text[x] !== '2' &&
-											text[x] !== '3' && text[x] !== '4' && text[x] !== '5' &&
-											text[x] !== '6' && text[x] !== '7' && text[x] !== '8' &&
-											text[x] !== '9' && text[x] !== '/'
-										) {
-											text = text.replace(text[x], '');
-											x--;
-										}
-										else {
-											if (x === 1 || x == 4) {
-												if (text[x] === '/') {
-													const part1 = text.substring(0, (x - 1));
-													const part2 = text.substring((x - 1), text.length);
-													text = part1 + '0' + part2;
-													x++;
+												let changedIndex = 0;
+												for (let x = 0; x < text.length; x++) {
+													if (text[x] !== date[x]) {
+														changedIndex = x;
+														break;
+													}
+												}
+
+												if (changedIndex === date.length) {
+													for (let x = 0; x < text.length; x++) {
+														if (text[x] !== '0' && text[x] !== '1' && text[x] !== '2' &&
+															text[x] !== '3' && text[x] !== '4' && text[x] !== '5' &&
+															text[x] !== '6' && text[x] !== '7' && text[x] !== '8' &&
+															text[x] !== '9' && text[x] !== '/'
+														) {
+															text = text.replace(text[x], '');
+															x--;
+														}
+														else {
+															if (x === 1 || x == 4) {
+																if (text[x] === '/') {
+																	const part1 = text.substring(0, (x - 1));
+																	const part2 = text.substring((x - 1), text.length);
+																	text = part1 + '0' + part2;
+																	x++;
+																}
+															}
+															else if (x === 2 || x == 5) {
+																if (text[x] !== '/') {
+																	const part1 = text.substring(0, (x));
+																	const part2 = text.substring((x), text.length);
+																	text = part1 + '/' + part2;
+																	x++;
+																}
+															}
+															else { // x === 3 || x === 6  || x == 0
+																if (text[x] === '/') {
+																	const part1 = text.substring(0, (x));
+																	const part2 = text.substring((x + 1), text.length);
+																	text = part1 + part2;
+																	x--;
+																}
+															}
+														}
+													}
+													text = text.substring(0, 10);
 												}
 											}
-											else if (x === 2 || x == 5) {
-												if (text[x] !== '/') {
-													const part1 = text.substring(0, (x));
-													const part2 = text.substring((x), text.length);
-													text = part1 + '/' + part2;
-													x++;
+
+											setDate(text);
+										}}
+										maxLength={10}
+										isFilled={date.trim().length > 0}
+									/>
+									<Input
+										title='Hora'
+										style={{ flex: 1 }}
+										inputAlign={'RIGHT'}
+										value={time}
+										maxLength={5}
+										onChangeText={(text) => {
+											if (text.length > time.length) {
+
+												let changedIndex = 0;
+												for (let x = 0; x < text.length; x++) {
+													if (text[x] !== time[x]) {
+														changedIndex = x;
+														break;
+													}
+												}
+
+												if (changedIndex === time.length) {
+													for (let x = 0; x < text.length; x++) {
+														if (text[x] !== '0' && text[x] !== '1' && text[x] !== '2' &&
+															text[x] !== '3' && text[x] !== '4' && text[x] !== '5' &&
+															text[x] !== '6' && text[x] !== '7' && text[x] !== '8' &&
+															text[x] !== '9' && text[x] !== ':'
+														) {
+															text = text.replace(text[x], '');
+															x--;
+														}
+														if (x === 1) {
+															if (text[x] === ':') {
+																const part1 = text.substring(0, (x - 1));
+																const part2 = text.substring((x - 1), text.length);
+																text = part1 + '0' + part2;
+																x++;
+															}
+														}
+														else if (x === 2) {
+															if (text[x] !== ':') {
+																const part1 = text.substring(0, (x));
+																const part2 = text.substring((x), text.length);
+																text = part1 + ':' + part2;
+																x++;
+															}
+														}
+														else { // x === 3 x === 4 x === 0
+															if (text[x] === ':') {
+																const part1 = text.substring(0, (x));
+																const part2 = text.substring((x + 1), text.length);
+																text = part1 + part2;
+																x--;
+															}
+														}
+													}
+													text = text.substring(0, 5);
 												}
 											}
-											else { // x === 3 || x === 6  || x == 0
-												if (text[x] === '/') {
-													const part1 = text.substring(0, (x));
-													const part2 = text.substring((x + 1), text.length);
-													text = part1 + part2;
-													x--;
-												}
-											}
-										}
-									}
-									text = text.substring(0, 10);
-								}
+											setTime(text);
+										}}
+										onSubmitEditing={(event) => {
+											// autocompleta com os minutos em '00'
+											const { text } = event.nativeEvent;
 
-								setDate(text);
-							}}
-							maxLength={10}
-						/>
-						<Input
-							title='Hora'
-							style={{ flex: 1 }}
-							inputAlign={'RIGHT'}
-							value={time}
-							maxLength={5}
-							onChangeText={(text) => {
-								if (text.length > time.length) {
-									for (let x = 0; x < text.length; x++) {
-										if (text[x] !== '0' && text[x] !== '1' && text[x] !== '2' &&
-											text[x] !== '3' && text[x] !== '4' && text[x] !== '5' &&
-											text[x] !== '6' && text[x] !== '7' && text[x] !== '8' &&
-											text[x] !== '9' && text[x] !== ':'
-										) {
-											text = text.replace(text[x], '');
-											x--;
-										}
-										if (x === 1) {
-											if (text[x] === ':') {
-												const part1 = text.substring(0, (x - 1));
-												const part2 = text.substring((x - 1), text.length);
-												text = part1 + '0' + part2;
-												x++;
+											if (text.charAt(2) === ':') {
+												setTime(text + '00');
 											}
-										}
-										else if (x === 2) {
-											if (text[x] !== ':') {
-												const part1 = text.substring(0, (x));
-												const part2 = text.substring((x), text.length);
-												text = part1 + ':' + part2;
-												x++;
+											else if (text.length > 0 && text.length < 3) {
+												const hours = text.padStart(2, '0');
+												setTime(hours + ':00');
 											}
-										}
-										else { // x === 3 x === 4 x === 0
-											if (text[x] === ':') {
-												const part1 = text.substring(0, (x));
-												const part2 = text.substring((x + 1), text.length);
-												text = part1 + part2;
-												x--;
-											}
-										}
-									}
-									text = text.substring(0, 5);
-								}
-								setTime(text);
-							}}
-							onSubmitEditing={(event) => {
-								// autocompleta com os minutos em '00'
-								const { text } = event.nativeEvent;
+										}}
+										isFilled={time.trim().length > 0}
+									/>
+								</DateTimeContainer >
 
-								if (text.charAt(2) === ':') {
-									setTime(text + '00');
-								}
-								else if (text.length > 0 && text.length < 3) {
-									const hours = text.padStart(2, '0');
-									setTime(hours + ':00');
-								}
-							}}
-						/>
-					</DateTimeContainer >
-
-					<SelectTitle>Está dentro da dieta?</SelectTitle>
-					<SelectContainer>
-						<Select
-							onPress={() => setSelectedOption(true)}
-							selected={selectedOption || false}
-						/>
-						<Select
-							insideTheDiet={false}
-							onPress={() => setSelectedOption(false)}
-							selected={!selectedOption && selectedOption !== null}
-						/>
-					</SelectContainer>
-				</Form>
-				<Button
-					style={{ marginTop: 6 }}
-					title={screenAction === 'CREATION' ? 'Cadastrar refeição' : 'Salvar alterações'}
-					onPress={screenAction === 'CREATION' ? handleNewMeal : handleSaveMeal}
-				/>
+								<SelectTitle>Está dentro da dieta?</SelectTitle>
+								<SelectContainer>
+									<Select
+										onPress={() => setSelectedOption(true)}
+										selected={selectedOption || false}
+									/>
+									<Select
+										insideTheDiet={false}
+										onPress={() => setSelectedOption(false)}
+										selected={!selectedOption && selectedOption !== null}
+									/>
+								</SelectContainer>
+							</ScrollView>
+							<Button
+								style={{ marginTop: 6 }}
+								title={screenAction === 'CREATION' ? 'Cadastrar refeição' : 'Salvar alterações'}
+								onPress={screenAction === 'CREATION' ? handleNewMeal : handleSaveMeal}
+							/>
+						</>
+				}
 			</Content>
 		</Container>
 	);

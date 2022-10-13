@@ -1,21 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
-import { FlatList, Alert } from 'react-native';
+import { SectionList, Alert } from 'react-native';
 import * as PhosphorIcons from 'phosphor-react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { useTheme } from 'styled-components/native';
+import MaskedView from '@react-native-masked-view/masked-view';
 
-import { getAllMeals, MealStorageDTO } from '@storage/meal';
+import { getMealsInSection, MealsSectionDTO } from '@storage/meal';
 
 import { TopCard } from '@components/TopCard';
 import { Percent } from '@components/Percent';
 import { Button } from '@components/Button';
-import { Meal } from '@components/Meal';
+import { MealCard } from '@components/MealCard';
 import { Loading } from '@components/Loading';
 
-import { Container, Title, ListDate, NoMealsMessage } from './styles';
+import { Container, Title, ListDate, NoMealsMessage, Gradient } from './styles';
 
 export function Home() {
-	const [meals, setMeals] = useState<MealStorageDTO[]>([]);
+	const [mealsInSection, setMealsInSection] = useState<MealsSectionDTO[]>([]);
 	const [percentage, setPercentage] = useState<number | null>(null);
 	const [loadingMeals, setLoadingMeals] = useState(false);
 
@@ -39,10 +40,18 @@ export function Home() {
 	}
 
 	function updatePercentage() {
-		const amountInsideTheDiet = meals.filter(meal => meal.insideTheDiet === true).length;
+		let amountInsideTheDiet = 0;
+		let amountOfMeals = 0;
+		for (let index in mealsInSection) {
+			const sectionAmount = mealsInSection[index].data.filter(
+				meal => meal.isInsideTheDiet === true
+			).length;
+			amountOfMeals += mealsInSection[index].data.length;
+			amountInsideTheDiet += sectionAmount;
+		}
 
-		const percentage = (meals.length > 0)
-			? (amountInsideTheDiet * 100) / (meals.length)
+		const percentage = (amountOfMeals > 0)
+			? (amountInsideTheDiet * 100) / (amountOfMeals)
 			: null;
 
 		setPercentage(percentage);
@@ -51,8 +60,8 @@ export function Home() {
 	async function fetchMeals() {
 		try {
 			setLoadingMeals(true);
-			const allMeals = await getAllMeals();
-			setMeals(allMeals);
+			const allMealsInSection = await getMealsInSection();
+			setMealsInSection(allMealsInSection);
 		} catch (error) {
 			console.log(error);
 			return Alert.alert(
@@ -70,7 +79,7 @@ export function Home() {
 
 	useEffect(() => {
 		updatePercentage();
-	}, [meals])
+	}, [mealsInSection])
 
 	return (
 		<Container>
@@ -95,46 +104,38 @@ export function Home() {
 						size='small'
 					/>
 					:
-					<FlatList
-						data={meals}
-						keyExtractor={item => item.date + '-' + item.time}
-						renderItem={({ item }) => {
-							const x = meals.indexOf(item);
+					<MaskedView
+						maskElement={<Gradient />}
+						style={{ flex: 1 }}
+					>
+						<SectionList
+							sections={mealsInSection}
+							keyExtractor={item => item.date + '-' + item.time}
+							renderItem={({ item }) => (
+								<MealCard
+									name={item.name}
+									hour={item.time}
+									isInsideTheDiet={item.isInsideTheDiet}
+									onPress={() => handleMealInfo(`${item.date}-${item.time}`)}
+								/>
+							)}
+							renderSectionHeader={({ section }) => {
+								const [day, month, year] = section.title.split('/');
+								const newYear = year.substring(2, 4);
 
-							const [currentDay, currentMonth, currentYear] = item.date.split('/');
-							const [previousDay, previousMonth, previousYear] = x !== 0
-								? meals[x - 1].date.split('/')
-								: '';
-
-							return (
-								<>
-									{
-										(currentDay !== previousDay
-											|| currentMonth !== previousMonth
-											|| currentYear !== previousYear)
-										&&
-										<ListDate>{currentDay}.{currentMonth}.{currentYear}</ListDate>
-									}
-									<Meal
-										hour={item.time}
-										name={item.name}
-										inDiet={item.insideTheDiet}
-										onPress={() => handleMealInfo(`${item.date}-${item.time}`)}
-									/>
-								</>
-							);
-						}}
-						showsVerticalScrollIndicator={false}
-
-						contentContainerStyle={
-							meals.length === 0
-								? { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 15 }
-								: { paddingBottom: 100 }
-						}
-						ListEmptyComponent={() => (
-							<NoMealsMessage>Ainda não há refeições cadastradas, adicione sua primeira refeição acima.</NoMealsMessage>
-						)}
-					/>
+								return <ListDate>{day}.{month}.{newYear}</ListDate>
+							}}
+							showsVerticalScrollIndicator={false}
+							contentContainerStyle={
+								mealsInSection.length === 0
+									? { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 15 }
+									: { paddingBottom: '40%' }
+							}
+							ListEmptyComponent={() => (
+								<NoMealsMessage>Ainda não há refeições cadastradas, adicione sua primeira refeição acima.</NoMealsMessage>
+							)}
+						/>
+					</MaskedView>
 			}
 		</Container>
 	);

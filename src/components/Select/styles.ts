@@ -38,7 +38,7 @@ export const Container = styled.View<ContainerProps>`
 `;
 
 export const Icon = styled(Circle).attrs<MyIconProps>(({ theme, insideTheDiet }) => ({
-	size: 8,
+	size: theme.FONT_SIZE.BODY.SM / 1.75,
 	weight: 'fill',
 	color: insideTheDiet ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK
 } as IconProps)) <MyIconProps>`

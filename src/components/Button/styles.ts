@@ -18,7 +18,7 @@ export const Container = styled.View <ContainerProps>`
 	border-radius: 6px;
 	${({ theme, type, pressed }) => type === 'SECONDARY'
 		? css`
-			background-color: ${pressed ? theme.COLORS.GRAY_500 : theme.COLORS.WHITE};
+			background-color: ${pressed ? theme.COLORS.GRAY_500 : theme.COLORS.GRAY_700};
 			border: 1px solid ${theme.COLORS.GRAY_100};
 		`
 		: css`

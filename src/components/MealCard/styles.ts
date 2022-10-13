@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components/native';
 import { Circle, IconProps } from 'phosphor-react-native';
 
 type StatusProps = {
-	inDiet: boolean;
+	isInsideTheDiet: boolean;
 }
 
 type ContainerProps = {
@@ -10,13 +10,12 @@ type ContainerProps = {
 }
 
 export const Container = styled.View<ContainerProps>`
-	/* flex: 1; */
 	flex-direction: row;
 	align-items: center;
 	padding: 14px 16px 14px 12px;
 	${({ theme, pressed }) => css`
-		background-color: ${pressed ? theme.COLORS.GRAY_500 : theme.COLORS.WHITE};
-		border: ${theme.COLORS.GRAY_500};
+		background-color: ${pressed ? theme.COLORS.GRAY_500 : 'transparent'};
+		border: 1px solid ${theme.COLORS.GRAY_500};
 	`};
 	border-radius: 6px;
 	margin-bottom: 8px;
@@ -47,11 +46,11 @@ export const MealName = styled.Text`
 	flex: 1;
 `;
 
-export const Status = styled(Circle).attrs<StatusProps>(({ theme, inDiet }) => ({
+export const Status = styled(Circle).attrs<StatusProps>(({ theme, isInsideTheDiet }) => ({
 	size: theme.FONT_SIZE.BODY.SM,
 	weight: 'fill',
-	color: inDiet ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID
+	color: isInsideTheDiet ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID
 } as IconProps)) <StatusProps>`
 	margin-left: 20px;
-	color: ${({ theme, inDiet }) => inDiet ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID}
+	color: ${({ theme, isInsideTheDiet }) => isInsideTheDiet ? theme.COLORS.GREEN_MID : theme.COLORS.RED_MID}
 `;

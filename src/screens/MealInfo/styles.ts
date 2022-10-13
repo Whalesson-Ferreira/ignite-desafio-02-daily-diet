@@ -3,15 +3,17 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { Circle, IconProps } from 'phosphor-react-native';
 
 type Props = {
-	isInsideTheDiet: boolean;
+	isInsideTheDiet: boolean | null;
 }
 
 export const Container = styled(SafeAreaView) <Props>`
 	flex: 1;
 	background-color: ${({ theme, isInsideTheDiet }) =>
-		isInsideTheDiet
-			? theme.COLORS.GREEN_LIGHT
-			: theme.COLORS.RED_LIGHT
+		isInsideTheDiet === null
+			? theme.COLORS.GRAY_500
+			: isInsideTheDiet === true
+				? theme.COLORS.GREEN_LIGHT
+				: theme.COLORS.RED_LIGHT
 	};
 `;
 
@@ -66,7 +68,7 @@ export const Status = styled.View`
 `;
 
 export const Icon = styled(Circle).attrs<Props>(({ theme, isInsideTheDiet }) => ({
-	size: 8,
+	size: theme.FONT_SIZE.BODY.SM / 1.75,
 	color: isInsideTheDiet ? theme.COLORS.GREEN_DARK : theme.COLORS.RED_DARK,
 	weight: 'fill'
 } as IconProps)) <Props>`

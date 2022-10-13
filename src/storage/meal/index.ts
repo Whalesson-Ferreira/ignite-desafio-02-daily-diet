@@ -1,9 +1,23 @@
 import { createMeal } from './createMeal';
-import { getAllMeals } from './getAllMeals';
-import { MealStorageDTO } from './MealStorageDTO';
+import { updateMeal } from './updateMeal';
+import { getMeal } from './getMeal';
+import { removeMeal } from './removeMeal';
+import { getMeals } from './getMeals';
+import { getMealsInSection } from './getMealsInSection';
+import { getMealsByDate } from './getMealsByDate';
+import { MealStorageDTO } from './types/MealStorageDTO';
+import { MealsSectionDTO } from './types/MealsSectionDTO';
+import { getStatistics } from './getStatistics';
 
 export {
 	createMeal,
-	getAllMeals,
-	MealStorageDTO
+	updateMeal,
+	getMeal,
+	removeMeal,
+	getMeals,
+	getMealsInSection,
+	getMealsByDate,
+	getStatistics,
+	MealStorageDTO,
+	MealsSectionDTO
 }

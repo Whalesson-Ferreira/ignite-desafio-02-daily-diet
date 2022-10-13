@@ -7,6 +7,9 @@ type Props = {
 	inputAlign: InputAlignStyle;
 }
 
+type MyInputProps = {
+	darkBorder: boolean;
+}
 
 export const Container = styled.View<Props>`
 	${({ inputAlign }) => inputAlign === 'SINGLE'
@@ -27,15 +30,18 @@ export const Title = styled.Text`
 
 export const MyInput = styled(TextInput).attrs(({ theme }) => ({
 	selectionColor: theme.COLORS.GRAY_400
-} as TextInputProps))`
+} as TextInputProps)) <MyInputProps>`
 	padding: 14px;
 	align-items: center;
-	height: 48px;
+	/* height: 48px; */
 	margin-top: 4px;
 	margin-bottom: 24px;
 	border-radius: 6px;
-	${({ theme }) => css`
-		border: 1px solid ${theme.COLORS.GRAY_500};
+	${({ theme, darkBorder }) => css`
+		border: 1px solid ${darkBorder
+			? theme.COLORS.GRAY_300
+			: theme.COLORS.GRAY_500
+		};
 		font-family: ${theme.FONT_FAMILY.REGULAR};
 		font-size: ${theme.FONT_SIZE.BODY.MD}px;
 		color: ${theme.COLORS.GRAY_100};
