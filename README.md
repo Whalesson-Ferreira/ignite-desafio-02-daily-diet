@@ -49,7 +49,7 @@ Execute o projeto com npm run start
 - Tela inicial da aplicação
 
 <p align="center" width="100%">
-  <img width="24%" src="https://github.com/Whalesson-Ferreira/ignite-desafio-02-daily-diet/blob/main/screenshots/startScreen/Screenshot_20221014-001430.png?raw=true">
+  <img width="24%" src="/screenshots/startScreen/Screenshot_20221014-001430.png">
 	<img width="24%" src="https://github.com/Whalesson-Ferreira/ignite-desafio-02-daily-diet/blob/main/screenshots/startScreen/Screenshot_20221014-002317.png?raw=true">
   <img width="24%" src="https://github.com/Whalesson-Ferreira/ignite-desafio-02-daily-diet/blob/main/screenshots/startScreen/Screenshot_20221014-002257.png?raw=true">
 </p>
