@@ -106,13 +106,9 @@ Além disso, outros conceitos foram reforçados, como:
 ## Documentação
 
 [React Native](https://reactnative.dev/docs/components-and-apis)
-
 [Expo](https://docs.expo.dev/)
-
 [TypeScript](https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html)
-
 [Styled-Components](https://styled-components.com/docs)
-
 [React Navigation](https://reactnavigation.org/docs/getting-started/)
 
 ## Autores
