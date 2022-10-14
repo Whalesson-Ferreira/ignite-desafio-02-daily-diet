@@ -48,7 +48,7 @@ Execute o projeto com npm run start
 
 - Tela inicial da aplicação
 
-<p align="center" width="100%">
+<p align="left" width="100%">
   <img width="24%" src="/screenshots/startScreen/Screenshot_20221014-001430.png">
 	<img width="24%" src="/screenshots/startScreen/Screenshot_20221014-002317.png">
   <img width="24%" src="/screenshots/startScreen/Screenshot_20221014-002257.png">
@@ -56,7 +56,7 @@ Execute o projeto com npm run start
 
 - Adicionando uma nova refeição
 
-<p align="center" width="100%">
+<p align="left" width="100%">
   <img width="24%" src="/screenshots/addMeal/Screenshot_20221014-001542.png">
   <img width="24%" src="/screenshots/addMeal/Screenshot_20221014-001554.png">
 	<img width="24%" src="/screenshots/addMeal/Screenshot_20221014-001659.png">
@@ -65,26 +65,26 @@ Execute o projeto com npm run start
 
 - Exibindo as informações de uma refeição
 
-<p align="center" width="100%">
+<p align="left" width="100%">
   <img width="24%" src="/screenshots/showMeal/Screenshot_20221014-001913.png">
   <img width="24%" src="/screenshots/showMeal/Screenshot_20221014-002300.png">
 </p>
 
 - Editando uma refeição
 
-<p align="center" width="100%">
+<p align="left" width="100%">
   <img width="24%" src="/screenshots/editMeal/Screenshot_20221014-001839.png">
 </p>
 
 - Removendo uma refeição da listagem
 
-<p align="center" width="100%">
+<p align="left" width="100%">
   <img width="24%" src="/screenshots/removeMeal/Screenshot_20221014-002313.png">
 </p>
 
 - Exibindo as estatísticas do progresso da dieta
 
-<p align="center" width="100%">
+<p align="left" width="100%">
   <img width="24%" src="/screenshots/showStatistics/Screenshot_20221014-002306.png">
 </p>
 
